@@ -1,6 +1,8 @@
 import type { ContentScriptContext } from '#imports';
 import { waitForElement } from '@/utils/dom';
+import { createRoot } from 'react-dom/client';
 import '~/assets/tailwind.css';
+import App from './app';
 
 const mountElSelector = '#secondary.style-scope.ytd-watch-flexy'
 
@@ -29,10 +31,19 @@ function createUi(ctx: ContentScriptContext) {
     anchor: mountElSelector,
     append: 'first',
     onMount: (uiContainer) => {
-      const p = document.createElement("p");
-      p.classList.add("text-lg", "text-red-500", "font-bold", "p-8");
-      p.textContent = "Hello from shadow root with TailwindCSS applied";
-      uiContainer.append(p);
+      const wrapper = document.createElement('div')
+
+      uiContainer.append(wrapper)
+
+      const root = createRoot(wrapper)
+
+      root.render(<App ctx={ctx} />)
+
+      return { root, wrapper }
+    },
+    onRemove: (elements) => {
+      elements?.root.unmount()
+      elements?.wrapper.remove()
     }
   })
 }
