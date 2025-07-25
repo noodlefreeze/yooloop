@@ -16,10 +16,10 @@ export function Header() {
 }
 
 function LightToggler() {
-  const [lightsOff, setLightOff] = useState(false)
+  const [lightsOff, setLightsOff] = useState(false)
 
   function handleClick() {
-    setLightOff(toggleLights() === 'off')
+    setLightsOff(toggleLights() === 'off')
   }
 
   return (
