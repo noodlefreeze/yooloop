@@ -4,3 +4,11 @@ export function isValidVideoUrl(url: string) {
 
     return standardRegex.test(url) || shortRegex.test(url)
 }
+
+export function getSearchParam(key: string) {
+    return new URLSearchParams(location.search).get(key)
+}
+
+export function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
