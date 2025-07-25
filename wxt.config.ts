@@ -1,4 +1,3 @@
-import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'wxt'
 
 export default defineConfig({
@@ -8,7 +7,4 @@ export default defineConfig({
     host_permissions: ['https://www.youtube.com/watch?v=*'],
   },
   manifestVersion: 3,
-  vite: () => ({
-    plugins: [tailwindcss()],
-  }),
 })

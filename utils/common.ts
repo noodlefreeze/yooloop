@@ -8,3 +8,9 @@ export function isValidVideoUrl(url: string) {
 export function getSearchParam(key: string) {
   return new URLSearchParams(location.search).get(key)
 }
+
+type Part = string | boolean | undefined
+
+export function bcls(...parts: Part[]) {
+  return parts.filter(Boolean).join(' ')
+}

@@ -21,16 +21,12 @@ export function waitForElement(selector: string) {
 }
 
 export function syncVideoElHeight() {
-  const videoEl = document.querySelector<HTMLVideoElement>(videoElSelector)
-
-  if (!videoEl) {
-    document.documentElement.style.setProperty(videoHeightCSSVariable, '500px')
-  }
+  const videoEl = document.querySelector(videoElSelector) as HTMLVideoElement
 
   const observer = new ResizeObserver(() => {
-    const height = videoEl!.style.getPropertyValue('height')
+    const height = videoEl.style.getPropertyValue('height')
     document.documentElement.style.setProperty(videoHeightCSSVariable, height)
   })
 
-  observer.observe(videoEl!)
+  observer.observe(videoEl)
 }

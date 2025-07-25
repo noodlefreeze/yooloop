@@ -1,9 +1,7 @@
-import { useAtom } from 'jotai'
-import type { ReactNode } from 'react'
-import { useEffect } from 'react'
+// biome-ignore assist/source/organizeImports: biome bug
 import type { ContentScriptContext } from '#imports'
-import { getSearchParam, isValidVideoUrl } from '@/utils/common'
-import { setVideoIdAtom } from './atoms/captions'
+import { useAtom } from 'jotai'
+import { useEffect } from 'react'
 
 interface AppProps {
   ctx: ContentScriptContext
@@ -42,20 +40,3 @@ export default function App(props: AppProps) {
   )
 }
 
-interface LayoutProps {
-  children: ReactNode
-}
-
-function Layout(props: LayoutProps) {
-  const { children } = props
-
-  return (
-    <section className="min-w-(--ytd-watch-flexy-sidebar-min-width) max-w-(--ytd-watch-flexy-sidebar-width) h-(--yooloop-height)">
-      {children}
-    </section>
-  )
-}
-
-function Header() {
-  return <header>11</header>
-}

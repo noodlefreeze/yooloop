@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["entrypoints/**/*", "utils/**/*"]
+    "includes": ["entrypoints/**/*", "utils/**/*", "components/**/*"]
   },
   "formatter": {
     "enabled": true,

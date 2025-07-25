@@ -1,5 +1,6 @@
 import type { ContentScriptContext } from '#imports'
-import '~/assets/tailwind.css'
+import '~/assets/main.css'
+import '~/assets/preflight.css'
 
 export default defineContentScript({
   matches: ['https://www.youtube.com/watch?v=*'],
