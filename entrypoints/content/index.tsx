@@ -1,19 +1,13 @@
-import type { ContentScriptContext } from '#imports';
-import { waitForElement } from '@/utils/dom';
-import { createRoot } from 'react-dom/client';
-import '~/assets/tailwind.css';
-import App from './app';
-
-const mountElSelector = '#secondary.style-scope.ytd-watch-flexy'
+import type { ContentScriptContext } from '#imports'
+import { createRoot } from 'react-dom/client'
+import '~/assets/tailwind.css'
 
 export default defineContentScript({
   matches: ['https://www.youtube.com/watch?v=*'],
   cssInjectionMode: 'ui',
-
   async main(ctx) {
     try {
-
-      await waitForElement(mountElSelector)
+      await Promise.all([waitForElement(mountElSelector)])
 
       const ui = await createUi(ctx)
 
@@ -22,7 +16,7 @@ export default defineContentScript({
       console.error((error as Error).message)
     }
   },
-});
+})
 
 function createUi(ctx: ContentScriptContext) {
   return createShadowRootUi(ctx, {
@@ -30,20 +24,23 @@ function createUi(ctx: ContentScriptContext) {
     position: 'inline',
     anchor: mountElSelector,
     append: 'first',
-    onMount: (uiContainer) => {
+    onMount: async (uiContainer) => {
       const wrapper = document.createElement('div')
 
       uiContainer.append(wrapper)
 
       const root = createRoot(wrapper)
+      const App = (await import('./app')).default
 
       root.render(<App ctx={ctx} />)
 
       return { root, wrapper }
     },
-    onRemove: (elements) => {
+    onRemove: async (elementsPromise) => {
+      const elements = await elementsPromise
+
       elements?.root.unmount()
       elements?.wrapper.remove()
-    }
+    },
   })
 }

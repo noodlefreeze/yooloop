@@ -1,0 +1,1 @@
+export const mountElSelector = '#secondary.style-scope.ytd-watch-flexy'
