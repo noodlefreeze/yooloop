@@ -1,5 +1,7 @@
 html {
   font-family: Roboto, Arial, sans-serif;
+  position: relative;
+  z-index: 9999;
 
   --color-sky-100: oklch(95.1% 0.026 236.824);
   --color-sky-500: oklch(68.5% 0.169 237.323);
