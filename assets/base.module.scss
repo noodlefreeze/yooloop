@@ -1,0 +1,100 @@
+.transitionColors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.iconBtn {
+  padding: 0.4rem;
+  border-radius: 0.6rem;
+  color: var(--color-zinc-500);
+
+  &.active {
+    color: var(--color-sky-500);
+
+    &:hover {
+      background-color: var(--color-sky-100);
+    }
+  }
+
+  &:hover {
+    background-color: var(--color-zinc-100);
+  }
+}
+
+.tooltipContent {
+  border-radius: 0.4rem;
+  padding: 1rem 1.4rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  background-color: white;
+  user-select: none;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;
+}
+
+.tooltipContent[data-state='delayed-open'][data-side='top'] {
+  animation-name: slideDownAndFade;
+}
+
+.tooltipContent[data-state='delayed-open'][data-side='right'] {
+  animation-name: slideLeftAndFade;
+}
+
+.tooltipContent[data-state='delayed-open'][data-side='bottom'] {
+  animation-name: slideUpAndFade;
+}
+
+.tooltipContent[data-state='delayed-open'][data-side='left'] {
+  animation-name: slideRightAndFade;
+}
+
+.tooltipArrow {
+  fill: white;
+}
+
+@keyframes slideUpAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideRightAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideLeftAndFade {
+  from {
+    opacity: 0;
+    transform: translateX(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

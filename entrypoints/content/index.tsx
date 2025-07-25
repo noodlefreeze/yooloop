@@ -1,6 +1,6 @@
 import type { ContentScriptContext } from '#imports'
-import { createRoot } from 'react-dom/client'
-import '~/assets/tailwind.css'
+import '~/assets/main.css'
+import '~/assets/preflight.css'
 
 export default defineContentScript({
   matches: ['https://www.youtube.com/watch?v=*'],
@@ -8,6 +8,7 @@ export default defineContentScript({
   async main(ctx) {
     try {
       await Promise.all([waitForElement(mountElSelector)])
+      syncVideoElHeight()
 
       const ui = await createUi(ctx)
 
@@ -29,8 +30,9 @@ function createUi(ctx: ContentScriptContext) {
 
       uiContainer.append(wrapper)
 
-      const root = createRoot(wrapper)
+      const createRoot = (await import('react-dom/client')).createRoot
       const App = (await import('./app')).default
+      const root = createRoot(wrapper)
 
       root.render(<App ctx={ctx} />)
 
