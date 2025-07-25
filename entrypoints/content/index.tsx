@@ -9,6 +9,7 @@ export default defineContentScript({
     try {
       await Promise.all([waitForElement(mountElSelector)])
       syncVideoElHeight()
+      createLightsOffEl()
 
       const ui = await createUi(ctx)
 
