@@ -1,5 +1,4 @@
 import type { ContentScriptContext } from '#imports'
-import { createRoot } from 'react-dom/client'
 import '~/assets/tailwind.css'
 
 export default defineContentScript({
@@ -29,8 +28,9 @@ function createUi(ctx: ContentScriptContext) {
 
       uiContainer.append(wrapper)
 
-      const root = createRoot(wrapper)
+      const createRoot = (await import('react-dom/client')).createRoot
       const App = (await import('./app')).default
+      const root = createRoot(wrapper)
 
       root.render(<App ctx={ctx} />)
 
