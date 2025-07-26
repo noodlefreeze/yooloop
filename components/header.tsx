@@ -5,7 +5,9 @@ import style from '~/assets/header.module.scss'
 export function Header() {
   return (
     <header className={style.header}>
-      <div></div>
+      <div>
+        <Captions />
+      </div>
       <div>
         <Tooltip.Provider delayDuration={700}>
           <LightToggler />

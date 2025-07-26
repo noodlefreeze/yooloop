@@ -10,9 +10,6 @@ interface AppProps {
 export default function App(props: AppProps) {
   const { ctx } = props
   const [, setVideoId] = useAtom(setVideoIdAtom)
-  // const [captions] = useAtom(captionsAtom)
-  // const [, setCaptionIndex] = useAtom(setCaptionIndexAtom)
-  // const [subtitles] = useAtom(subtitlesAtom)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies(setVideoId): suppress dependency setVideoId
   // biome-ignore lint/correctness/useExhaustiveDependencies(ctx.addEventListener): suppress dependency ctx.addEventListener
@@ -39,4 +36,3 @@ export default function App(props: AppProps) {
     </Layout>
   )
 }
-
