@@ -1,3 +1,18 @@
+.select {
+  font-size: 1.2rem;
+  appearance: none;
+  background-image: url('/public/icon/arrow-down-s-line.svg');
+  background-repeat: no-repeat;
+  background-position: right 0.2em top 50%;
+  background-size: 1.6rem;
+  text-overflow: ellipsis;
+  padding: 0.5em 1.5em 0.5em 0.5em;
+  border-radius: 0.9rem;
+  width: 10rem;
+  text-overflow: ellipsis;
+  box-shadow: 0px 4px 8px -5px rgba(0, 0, 0, 0.15), 0px 0px 0px 1px #e5e5e5;
+}
+
 .transitionColors {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

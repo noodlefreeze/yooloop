@@ -112,4 +112,5 @@ const subtitlesBaseAtom = atom(async (get) => {
 })
 const subtitlesAtom = loadable(subtitlesBaseAtom)
 
-export { captionIndexAtom, captionsAtom, setCaptionIndexAtom, setVideoIdAtom, subtitlesAtom }
+export { captionsAtom, setCaptionIndexAtom, setVideoIdAtom, subtitlesAtom }
+
