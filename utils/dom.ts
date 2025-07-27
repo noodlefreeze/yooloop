@@ -71,9 +71,7 @@ export function createLightsOffEl() {
 export function toggleLights(): 'on' | 'off' {
   const lightsOffEl = document.querySelector<HTMLDivElement>(`#${lightOffElSelector}`)
   const mountEl = document.querySelector<HTMLDivElement>(lightsOffMountElSelector)
-  const yooloopEl = document.querySelector<HTMLHtmlElement>('yooloop-ui')
-  const shadowRoot = yooloopEl?.shadowRoot
-  const rootEl = shadowRoot?.querySelector<HTMLHtmlElement>('html')
+  const rootEl = document.querySelector<HTMLHtmlElement>('yooloop-ui')?.shadowRoot?.querySelector<HTMLHtmlElement>('html')
 
   if (!lightsOffEl || !mountEl || !rootEl) return 'on'
 
