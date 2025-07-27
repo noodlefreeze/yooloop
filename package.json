@@ -22,6 +22,7 @@
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.2.7",
     "jotai": "^2.12.5",
+    "jotai-history": "^0.4.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

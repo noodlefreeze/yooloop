@@ -1,8 +1,12 @@
 .layout {
+  --radius: 1.2rem;
+
   min-width: var(--ytd-watch-flexy-sidebar-min-width);
   max-width: var(--ytd-watch-flexy-sidebar-width);
   height: var(--yooloop-height);
   border: 1px solid var(--yt-spec-10-percent-layer);
-  border-radius: 1.2rem;
+  border-radius: var(--radius);
   margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
 }

@@ -1,3 +1,10 @@
+.main {
+  flex: 1;
+  overflow: auto;
+  scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+
 .select {
   font-size: 1.2rem;
   appearance: none;
@@ -11,6 +18,28 @@
   width: 10rem;
   text-overflow: ellipsis;
   box-shadow: 0px 4px 8px -5px rgba(0, 0, 0, 0.15), 0px 0px 0px 1px #e5e5e5;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.loading {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  background-color: rgba($color: white, $alpha: 0.85);
+  color: var(--color-zinc-500);
+
+  svg {
+    animation: spin 1s linear infinite;
+  }
 }
 
 .transitionColors {
@@ -111,5 +140,11 @@
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

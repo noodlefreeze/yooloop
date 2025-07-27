@@ -2,6 +2,7 @@
 import type { ContentScriptContext } from '#imports'
 import { useAtom } from 'jotai'
 import { useEffect } from 'react'
+import baseStyle from '~/assets/base.module.scss'
 
 interface AppProps {
   ctx: ContentScriptContext
@@ -33,6 +34,9 @@ export default function App(props: AppProps) {
   return (
     <Layout>
       <Header />
+      <main className={baseStyle.main}>
+        <Subtitles />
+      </main>
     </Layout>
   )
 }
