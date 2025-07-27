@@ -66,20 +66,27 @@ export function createLightsOffEl() {
   lightsOffEl.id = lightOffElSelector
   lightsOffEl.classList.add(lightsOffToggleClass)
   mountEl.appendChild(lightsOffEl)
-  mountEl.style.setProperty('z-index', '9999')
 }
 
 export function toggleLights(): 'on' | 'off' {
-  const lightsOffEl = document.querySelector(`#${lightOffElSelector}`) as HTMLDivElement
+  const lightsOffEl = document.querySelector<HTMLDivElement>(`#${lightOffElSelector}`)
+  const mountEl = document.querySelector<HTMLDivElement>(lightsOffMountElSelector)
+  const yooloopEl = document.querySelector<HTMLHtmlElement>('yooloop-ui')
+  const shadowRoot = yooloopEl?.shadowRoot
+  const rootEl = shadowRoot?.querySelector<HTMLHtmlElement>('html')
 
-  if (!lightsOffEl) return 'on'
+  if (!lightsOffEl || !mountEl || !rootEl) return 'on'
 
   if (lightsOffEl.classList.contains(lightsOffToggleClass)) {
     lightsOffEl.classList.remove(lightsOffToggleClass)
+    mountEl.style.setProperty('z-index', '9999')
+    rootEl.style.setProperty('z-index', '9999')
     return 'off'
 
   } else {
     lightsOffEl.classList.add(lightsOffToggleClass)
+    mountEl.style.setProperty('z-index', '0')
+    rootEl.style.setProperty('z-index', '0')
 
     return 'on'
   }
