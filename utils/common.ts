@@ -15,8 +15,12 @@ export function bcls(...parts: Part[]) {
   return parts.filter(Boolean).join(' ')
 }
 
-export function getDefaultCaptionIndex(captions: Caption[]) {
-  const index = captions.findIndex(caption => caption.languageCode === 'en')
+export async function getDefaultCaptionIndex(captions: Caption[]) {
+  let userPreferred = await storage.getItem<string>('local:preferredLanguage')
+
+  if (!userPreferred) userPreferred = 'en'
+
+  const index = captions.findIndex(caption => caption.languageCode === userPreferred)
 
   return index === -1 ? 0 : index
 }

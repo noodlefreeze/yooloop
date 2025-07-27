@@ -16,7 +16,7 @@ export function Captions() {
     const value = parseInt(event.target.value)
     const languageCode = event.target.options[value].dataset.languageCode
 
-    await storage.setItem('local:preferredLanguage', languageCode)
+    storage.setItem('local:preferredLanguage', languageCode)
     setCaptionIndex(value)
   }
 

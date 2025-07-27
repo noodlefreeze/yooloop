@@ -74,11 +74,7 @@ function createCaptionIndexAtoms() {
     const captions = get(captionsAtom)
 
     if (captions.state === 'hasData') {
-      let userPreferred = await storage.getItem<string>('local:preferredLanguage')
-
-      if (!userPreferred) userPreferred = 'en'
-
-      const index = captions.data.findIndex(caption => caption.languageCode === userPreferred)
+      const index = await getDefaultCaptionIndex(captions.data)
 
       return index === -1 ? 0 : index
     }
