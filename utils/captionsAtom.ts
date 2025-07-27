@@ -1,4 +1,6 @@
+// biome-ignore assist/source/organizeImports: jotai bug
 import { atom } from 'jotai'
+import { withHistory } from 'jotai-history'
 import { loadable } from 'jotai/utils'
 
 function createVideoIdAtoms(initialValue: string) {
@@ -11,7 +13,7 @@ function createVideoIdAtoms(initialValue: string) {
 
 const [videoIdAtom, setVideoIdAtom] = createVideoIdAtoms(getSearchParam('v') as string)
 
-interface Caption {
+export interface Caption {
   baseUrl: string
   name: {
     simpleText: string
@@ -61,34 +63,62 @@ const captionsBaseAtom = atom(async (get) => {
 const captionsAtom = loadable(captionsBaseAtom)
 
 function createCaptionIndexAtoms() {
-  const baseAtom = atom(0)
-  const valueAtom = atom((get) => get(baseAtom))
-  const setAtom = atom(null, (get, set, index: number) => {
+  const baseAtom = atom<number | null>(null)
+  const captionIndexAtom = atom(async (get) => {
+    const base = get(baseAtom)
+
+    if (base !== null) {
+      return base
+    }
+
     const captions = get(captionsAtom)
 
-    if (captions.state === 'hasData' && captions.data.length > index) {
-      set(baseAtom, index)
+    if (captions.state === 'hasData') {
+      const index = await getDefaultCaptionIndex(captions.data)
+
+      return index === -1 ? 0 : index
     }
+
+    return 0
+
+  }, (_, set, index: number) => {
+    set(baseAtom, index)
   })
 
-  return [valueAtom, setAtom] as const
+  return [captionIndexAtom] as const
 }
 
-const [captionIndexAtom, setCaptionIndexAtom] = createCaptionIndexAtoms()
+const [captionIndexAtom] = createCaptionIndexAtoms()
 
-// interface Subtitle {
-//   start: number
-//   dur: number
-//   content: string | null
-// }
+interface Event {
+  startMs: number
+  endMs: number
+  durMs: number
+  content: string
+}
+interface Subtitle {
+  events: Event[]
+}
+
+interface YTSeg {
+  utf8: string
+}
+interface YTEvent {
+  dDurationMs: number
+  tStartMs: number
+  segs: YTSeg[]
+}
+interface YTSubtitle {
+  events: YTEvent[]
+}
 
 const subtitlesBaseAtom = atom(async (get) => {
   const captions = get(captionsAtom)
-  const index = get(captionIndexAtom)
+  const captionIndex = await get(captionIndexAtom)
 
-  if (captions.state === 'hasData' && captions.data.length > index) {
+  if (captions.state === 'hasData' && captionIndex < captions.data.length) {
     const pot = (await storage.getItem('local:pot')) as string
-    const caption = captions.data[index]
+    const caption = captions.data[captionIndex]
     const url = new URL(caption.baseUrl)
 
     url.searchParams.append('c', 'WEB')
@@ -103,14 +133,26 @@ const subtitlesBaseAtom = atom(async (get) => {
       throw new Error(`failed to fetch subtitles, response code: ${response.status}`)
     }
 
-    const subtitles = await response.json()
+    const ytSubtitles = (await response.json()) as YTSubtitle
+    const events: Event[] = []
+
+    ytSubtitles.events.forEach((event) => {
+      events.push({
+        startMs: event.tStartMs,
+        endMs: event.tStartMs + event.dDurationMs,
+        durMs: event.dDurationMs,
+        content: event.segs.map((seg) => seg.utf8).join(' '),
+      })
+    })
+
+    const subtitles: Subtitle = { events }
 
     return subtitles
   }
 
-  return []
+  return { events: [] }
 })
-const subtitlesAtom = loadable(subtitlesBaseAtom)
+const subtitlesAtom = withHistory(loadable(subtitlesBaseAtom), 2)
 
-export { captionsAtom, setCaptionIndexAtom, setVideoIdAtom, subtitlesAtom }
+export { captionIndexAtom, captionsAtom, setVideoIdAtom, subtitlesAtom }
 
