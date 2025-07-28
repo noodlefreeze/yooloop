@@ -3,6 +3,7 @@ import { atom } from 'jotai'
 import { withHistory } from 'jotai-history'
 import { loadable } from 'jotai/utils'
 
+// videoId atom
 function createVideoIdAtoms(initialValue: string) {
   const baseAtom = atom(initialValue)
   const valueAtom = atom((get) => get(baseAtom))
@@ -13,6 +14,7 @@ function createVideoIdAtoms(initialValue: string) {
 
 const [videoIdAtom, setVideoIdAtom] = createVideoIdAtoms(getSearchParam('v') as string)
 
+// captions atom
 export interface Caption {
   baseUrl: string
   name: {
@@ -62,6 +64,7 @@ const captionsBaseAtom = atom(async (get) => {
 })
 const captionsAtom = loadable(captionsBaseAtom)
 
+// captionIndex atom
 function createCaptionIndexAtoms() {
   const baseAtom = atom<number | null>(null)
   const captionIndexAtom = atom(async (get) => {
@@ -90,6 +93,7 @@ function createCaptionIndexAtoms() {
 
 const [captionIndexAtom] = createCaptionIndexAtoms()
 
+// subtitles atom
 interface Event {
   startMs: number
   endMs: number
@@ -154,5 +158,6 @@ const subtitlesBaseAtom = atom(async (get) => {
 })
 const subtitlesAtom = withHistory(loadable(subtitlesBaseAtom), 2)
 
-export { captionIndexAtom, captionsAtom, setVideoIdAtom, subtitlesAtom }
+// sync video time with subtitles
 
+export { captionIndexAtom, captionsAtom, setVideoIdAtom, subtitlesAtom }

@@ -1,6 +1,6 @@
 .subtitles {
   height: 100%;
-  padding: 1rem;
+  margin: 1rem 0;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -15,18 +15,29 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  padding: 1rem;
+  cursor: default;
+
+  &:hover {
+    background-color: var(--color-gray-100);
+  }
+
+  &.currSubtitle {
+    background-color: var(--color-gray-100);
+  }
 }
 
 .timestamp {
   display: flex;
   gap: 0.4rem;
+  font-size: 1.2rem;
 
   button {
     background-color: var(--color-blue-100);
     color: var(--color-blue-500);
     padding: 0 0.4rem;
-    line-height: 1.8rem;
+    line-height: 1.6rem;
     font-weight: 500;
     border-radius: 0.4rem;
 

@@ -1,4 +1,4 @@
-import { lightsOffMountElSelector } from "./const"
+import { videoWrapperSelector } from "./const"
 
 export function waitForElement(selector: string) {
   return new Promise((resolve, reject) => {
@@ -34,7 +34,7 @@ export function syncVideoElHeight() {
 }
 
 export function createLightsOffEl() {
-  const mountEl = document.querySelector<HTMLDivElement>(lightsOffMountElSelector)
+  const mountEl = document.querySelector<HTMLDivElement>(videoWrapperSelector)
 
   if (!mountEl) {
     console.error("can not find lights-off mount element, maybe the element's id changed")
@@ -70,7 +70,7 @@ export function createLightsOffEl() {
 
 export function toggleLights(): 'on' | 'off' {
   const lightsOffEl = document.querySelector<HTMLDivElement>(`#${lightOffElSelector}`)
-  const mountEl = document.querySelector<HTMLDivElement>(lightsOffMountElSelector)
+  const mountEl = document.querySelector<HTMLDivElement>(videoWrapperSelector)
   const rootEl = document.querySelector<HTMLHtmlElement>('yooloop-ui')?.shadowRoot?.querySelector<HTMLHtmlElement>('html')
 
   if (!lightsOffEl || !mountEl || !rootEl) return 'on'
