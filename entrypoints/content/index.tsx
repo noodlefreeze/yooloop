@@ -7,7 +7,7 @@ export default defineContentScript({
   cssInjectionMode: 'ui',
   async main(ctx) {
     try {
-      await Promise.all([waitForElement(mountElSelector)])
+      await Promise.all([waitForElement(mountElSelector), waitForElement(videoElSelector)])
       syncVideoElHeight()
       createLightsOffEl()
 
