@@ -48,7 +48,6 @@ export function Subtitles() {
         return
       }
 
-      console.log('进入二分查找')
       let left = 0
       let right = events.length - 1
 
