@@ -1,11 +1,12 @@
-import { useAtomValue } from 'jotai'
-import type { MouseEvent } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
+import { type MouseEvent, memo } from 'react'
 import baseStyle from '~/assets/base.module.scss'
 import style from '~/assets/subtitles.module.scss'
 
 export function Subtitles() {
   const [currSubtitles, prevSubtitles] = useAtomValue(subtitlesAtom)
-  const videoRef = useRef<HTMLVideoElement | null>(document.querySelector<HTMLVideoElement>(videoElSelector))
+  const setLoopController = useSetAtom(setLoopControllerAtom)
+  const loopController = useAtomValue(loopControllerAtom)
   const [index, setIndex] = useState(0)
   const indexRef = useRef<number>(index)
   const subtitlesRef = useRef<HTMLDivElement>(null)
@@ -14,7 +15,6 @@ export function Subtitles() {
     if (!subtitlesRef.current) return
 
     const subtitleEl = subtitlesRef.current.children[index] as HTMLDivElement
-
     if (!subtitleEl) return
 
     const containerTop = subtitlesRef.current.scrollTop
@@ -31,22 +31,38 @@ export function Subtitles() {
   }, [index])
 
   useEffect(() => {
-    if (!videoRef.current || currSubtitles.state !== 'hasData' || currSubtitles.data.events.length === 0) return
+    if (currSubtitles.state !== 'hasData' || currSubtitles.data.events.length === 0) return
 
-    const videoEl = videoRef.current as HTMLVideoElement
+    const videoEl = appMetadata.videoEl
 
     function onTimestampUpdate() {
       // fuck... it's absolute not necessary
-      if (currSubtitles.state !== 'hasData') return
+      if (currSubtitles.state !== 'hasData' || appMetadata.videoEl.paused) return
 
       const currentTime = videoEl.currentTime * 1000
       const events = currSubtitles.data.events
 
+      // skip if ad is showing or video time is before first subtitle
       if (adShowing() || currentTime < events[0].startMs) return
 
-      if (events[indexRef.current].startMs <= currentTime && events[indexRef.current].endMs >= currentTime) {
-        return
+      if (loopController.looping) {
+        const { startMs, endMs } = loopController
+        const start = startMs ?? 0
+        const end = endMs
+
+        if (end !== undefined) {
+          if (currentTime > end || currentTime < start) {
+            appMetadata.videoEl.currentTime = (start + 1) / 1000
+          }
+        } else {
+          if (currentTime < start) {
+            appMetadata.videoEl.currentTime = (start + 1) / 1000
+          }
+        }
       }
+
+      // skip if current subtitle is still active
+      if (events[indexRef.current].startMs <= currentTime && events[indexRef.current].endMs >= currentTime) return
 
       let left = 0
       let right = events.length - 1
@@ -68,12 +84,55 @@ export function Subtitles() {
       }
     }
 
-    videoRef.current.addEventListener('timeupdate', onTimestampUpdate)
+    videoEl.addEventListener('timeupdate', onTimestampUpdate)
 
     return () => {
-      videoRef.current?.removeEventListener('timeupdate', onTimestampUpdate)
+      videoEl.removeEventListener('timeupdate', onTimestampUpdate)
     }
-  }, [currSubtitles.state])
+  }, [currSubtitles.state, loopController])
+
+  const handleSubtitleClick = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      event.preventDefault()
+
+      if (adShowing()) return
+
+      const target = event.target as HTMLElement
+
+      const syncVideoTime = () => {
+        const subtitleEl = target.closest<HTMLDivElement>('div[data-start-ms]')
+        if (!subtitleEl) return
+
+        const startMs = subtitleEl.dataset.startMs
+        if (!startMs) return
+
+        appMetadata.videoEl.currentTime = (parseFloat(startMs) + 1) / 1000
+      }
+
+      if (target.tagName === 'BUTTON') {
+        const id = target.id
+        if (!id) return
+
+        if (id === subtitleIdNames.syncVideoTime) {
+          syncVideoTime()
+        } else {
+          const key = id === subtitleIdNames.startLoop ? 'startMs' : id === subtitleIdNames.endLoop ? 'endMs' : null
+          if (!key) return
+
+          const dataAttr = target.dataset[key]
+          if (!dataAttr) return
+
+          const value = parseFloat(dataAttr)
+          if (Number.isNaN(value)) return
+
+          setLoopController(key, value)
+        }
+      } else {
+        syncVideoTime()
+      }
+    },
+    [setLoopController],
+  )
 
   if (currSubtitles.state === 'hasError') {
     return 'todo: error handler'
@@ -86,37 +145,57 @@ export function Subtitles() {
         ? prevSubtitles.data.events
         : []
 
-  function handleSubtitleClick(event: MouseEvent<HTMLDivElement>) {
-    event.preventDefault()
-
-    const target = event.target as HTMLElement
-
-    if (target.tagName === 'BUTTON') {
-    } else {
-    }
-  }
-
   return (
     <section className={bcls(style.subtitles, currSubtitles.state === 'loading' && style.loading)}>
       {currSubtitles.state === 'loading' && <Loading />}
       <div style={{ overflow: 'auto' }} ref={subtitlesRef} aria-hidden onClick={handleSubtitleClick}>
         {events.map((event, i) => (
-          <div
-            className={bcls(style.subtitle, index === i && style.currSubtitle, baseStyle.transitionColors)}
-            key={event.endMs}
-          >
-            <div className={style.timestamp}>
-              <button id="start-ms" data-start-ms={event.startMs} className={baseStyle.transitionColors} type="button">
-                {formatMillisecondsToHHMMSS(event.startMs)}
-              </button>
-              <button id="end-ms" data-end-ms={event.endMs} className={baseStyle.transitionColors} type="button">
-                {formatMillisecondsToHHMMSS(event.endMs)}
-              </button>
-            </div>
-            <p>{event.content}</p>
-          </div>
+          <Subtitle key={event.endMs} event={event} currentPlaying={i === index} />
         ))}
       </div>
     </section>
   )
 }
+
+interface SubtitleProps {
+  event: subtitleEvent
+  currentPlaying: boolean
+}
+
+const Subtitle = memo(
+  function Subtitle(props: SubtitleProps) {
+    const { event, currentPlaying } = props
+
+    return (
+      <div
+        className={bcls(style.subtitle, currentPlaying && style.currSubtitle, baseStyle.transitionColors)}
+        key={event.endMs}
+        data-start-ms={event.startMs}
+      >
+        <div className={style.timestamp}>
+          <button id={subtitleIdNames.syncVideoTime} className={baseStyle.transitionColors} type="button">
+            {formatMillisecondsToHHMMSS(event.startMs)}
+          </button>
+          <button
+            id={subtitleIdNames.startLoop}
+            data-start-ms={event.startMs}
+            className={baseStyle.transitionColors}
+            type="button"
+          >
+            start loop
+          </button>
+          <button
+            id={subtitleIdNames.endLoop}
+            data-end-ms={event.endMs}
+            className={baseStyle.transitionColors}
+            type="button"
+          >
+            end loop
+          </button>
+        </div>
+        <p>{event.content}</p>
+      </div>
+    )
+  },
+  (prev, next) => prev.currentPlaying === next.currentPlaying,
+)

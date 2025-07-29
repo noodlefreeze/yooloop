@@ -5,3 +5,49 @@
   padding: 1rem;
   border-bottom: 1px solid var(--yt-spec-10-percent-layer);
 }
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loopController {
+  display: flex;
+  padding: 0.5rem;
+  border-radius: 0.9rem;
+  box-shadow: 0px 4px 8px -5px rgba(0, 0, 0, 0.15), 0px 0px 0px 1px #e5e5e5;
+  font-size: 1.2rem;
+  width: 12rem;
+  // width: 14rem;
+  cursor: default;
+}
+
+.loop {
+  position: relative;
+  flex: 1;
+  gap: 0.5rem;
+}
+
+.loopDesc {
+  position: absolute;
+  top: 0;
+  transition: top 300ms ease-in-out;
+  white-space: nowrap;
+  color: var(--color-slate-400);
+
+  &.hasLoopValue {
+    top: -1.5rem;
+    background-color: white;
+  }
+}
+
+.loopValue {
+  min-height: 1.8rem;
+}

@@ -1,5 +1,5 @@
 // biome-ignore assist/source/organizeImports: jotai bug
-import { atom } from 'jotai'
+import { atom, type Getter, type Setter } from 'jotai'
 import { withHistory } from 'jotai-history'
 import { loadable } from 'jotai/utils'
 
@@ -67,26 +67,28 @@ const captionsAtom = loadable(captionsBaseAtom)
 // captionIndex atom
 function createCaptionIndexAtoms() {
   const baseAtom = atom<number | null>(null)
-  const captionIndexAtom = atom(async (get) => {
-    const base = get(baseAtom)
+  const captionIndexAtom = atom(
+    async (get) => {
+      const base = get(baseAtom)
 
-    if (base !== null) {
-      return base
-    }
+      if (base !== null) {
+        return base
+      }
 
-    const captions = get(captionsAtom)
+      const captions = get(captionsAtom)
 
-    if (captions.state === 'hasData') {
-      const index = await getDefaultCaptionIndex(captions.data)
+      if (captions.state === 'hasData') {
+        const index = await getDefaultCaptionIndex(captions.data)
 
-      return index === -1 ? 0 : index
-    }
+        return index === -1 ? 0 : index
+      }
 
-    return 0
-
-  }, (_, set, index: number) => {
-    set(baseAtom, index)
-  })
+      return 0
+    },
+    (_, set, index: number) => {
+      set(baseAtom, index)
+    },
+  )
 
   return [captionIndexAtom] as const
 }
@@ -94,14 +96,14 @@ function createCaptionIndexAtoms() {
 const [captionIndexAtom] = createCaptionIndexAtoms()
 
 // subtitles atom
-interface Event {
+export interface subtitleEvent {
   startMs: number
   endMs: number
   durMs: number
   content: string
 }
 interface Subtitle {
-  events: Event[]
+  events: subtitleEvent[]
 }
 
 interface YTSeg {
@@ -138,7 +140,7 @@ const subtitlesBaseAtom = atom(async (get) => {
     }
 
     const ytSubtitles = (await response.json()) as YTSubtitle
-    const events: Event[] = []
+    const events: subtitleEvent[] = []
 
     ytSubtitles.events.forEach((event) => {
       events.push({
@@ -158,6 +160,37 @@ const subtitlesBaseAtom = atom(async (get) => {
 })
 const subtitlesAtom = withHistory(loadable(subtitlesBaseAtom), 2)
 
-// sync video time with subtitles
+// loop controller atom
+interface Loop {
+  startMs?: number
+  endMs?: number
+  looping: boolean
+}
 
-export { captionIndexAtom, captionsAtom, setVideoIdAtom, subtitlesAtom }
+function createLoopControllerAtoms() {
+  const baseAtom = atom<Loop>({
+    startMs: undefined,
+    endMs: undefined,
+    looping: false,
+  })
+  const valueAtom = atom((get) => get(baseAtom))
+  const setAtom = atom(null, <K extends keyof Loop>(get: Getter, set: Setter, key: K, value: Loop[K]) => {
+    const base = get(baseAtom)
+
+    if (base[key] === value) return
+
+    const loop = { ...base, [key]: value }
+
+    if (loop.startMs !== undefined && loop.endMs !== undefined && loop.startMs > loop.endMs) {
+      ;[loop.startMs, loop.endMs] = [loop.endMs, loop.startMs]
+    }
+
+    set(baseAtom, loop)
+  })
+
+  return [valueAtom, setAtom] as const
+}
+
+const [loopControllerAtom, setLoopControllerAtom] = createLoopControllerAtoms()
+
+export { captionIndexAtom, captionsAtom, loopControllerAtom, setLoopControllerAtom, setVideoIdAtom, subtitlesAtom }

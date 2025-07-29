@@ -20,12 +20,15 @@ export async function getDefaultCaptionIndex(captions: Caption[]) {
 
   if (!userPreferred) userPreferred = 'en'
 
-  const index = captions.findIndex(caption => caption.languageCode === userPreferred)
+  const index = captions.findIndex((caption) => caption.languageCode === userPreferred)
 
   return index === -1 ? 0 : index
 }
 
-export function formatMillisecondsToHHMMSS(ms: number, defaultValue: string | undefined = undefined): string | undefined {
+export function formatMillisecondsToHHMMSS(
+  ms: number,
+  defaultValue: string | undefined = undefined,
+): string | undefined {
   if (!Number.isFinite(ms)) return defaultValue
 
   const totalSeconds = Math.floor(ms / 1000)
@@ -44,15 +47,4 @@ export function formatMillisecondsToHHMMSS(ms: number, defaultValue: string | un
   return `${hh}:${mm}:${ss}`
 }
 
-function isAdShowingDecorator() {
-  const wrapperEl = document.querySelector<HTMLDivElement>(videoWrapperSelector)
-
-  if (!wrapperEl) {
-    console.warn('No video wrapper element found, ad showing check will not work.')
-    return () => false
-  }
-
-  return () => wrapperEl.classList.contains('ad-showing')
-}
-
-export const adShowing = isAdShowingDecorator()
+export const adShowing = () => appMetadata.videoWrapperEl.classList.contains('ad-showing')
