@@ -150,7 +150,7 @@ export function Subtitles() {
       {currSubtitles.state === 'loading' && <Loading />}
       <div style={{ overflow: 'auto' }} ref={subtitlesRef} aria-hidden onClick={handleSubtitleClick}>
         {events.map((event, i) => (
-          <Subtitle key={event.endMs} event={event} currentPlaying={i === index} />
+          <Subtitle key={event.endMs + event.vssId} event={event} currentPlaying={i === index} />
         ))}
       </div>
     </section>
@@ -169,7 +169,6 @@ const Subtitle = memo(
     return (
       <div
         className={bcls(style.subtitle, currentPlaying && style.currSubtitle, baseStyle.transitionColors)}
-        key={event.endMs}
         data-start-ms={event.startMs}
       >
         <div className={style.timestamp}>
