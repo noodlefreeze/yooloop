@@ -44,15 +44,4 @@ export function formatMillisecondsToHHMMSS(ms: number, defaultValue: string | un
   return `${hh}:${mm}:${ss}`
 }
 
-function isAdShowingDecorator() {
-  const wrapperEl = document.querySelector<HTMLDivElement>(videoWrapperSelector)
-
-  if (!wrapperEl) {
-    console.warn('No video wrapper element found, ad showing check will not work.')
-    return () => false
-  }
-
-  return () => wrapperEl.classList.contains('ad-showing')
-}
-
-export const adShowing = isAdShowingDecorator()
+export const adShowing = () => appMetadata.videoWrapperEl.classList.contains('ad-showing')

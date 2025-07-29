@@ -1,11 +1,10 @@
 import { useAtomValue } from 'jotai'
-import type { MouseEvent } from 'react'
+import { type MouseEvent, memo } from 'react'
 import baseStyle from '~/assets/base.module.scss'
 import style from '~/assets/subtitles.module.scss'
 
 export function Subtitles() {
   const [currSubtitles, prevSubtitles] = useAtomValue(subtitlesAtom)
-  const videoRef = useRef<HTMLVideoElement | null>(document.querySelector<HTMLVideoElement>(videoElSelector))
   const [index, setIndex] = useState(0)
   const indexRef = useRef<number>(index)
   const subtitlesRef = useRef<HTMLDivElement>(null)
@@ -31,9 +30,9 @@ export function Subtitles() {
   }, [index])
 
   useEffect(() => {
-    if (!videoRef.current || currSubtitles.state !== 'hasData' || currSubtitles.data.events.length === 0) return
+    if (currSubtitles.state !== 'hasData' || currSubtitles.data.events.length === 0) return
 
-    const videoEl = videoRef.current as HTMLVideoElement
+    const videoEl = appMetadata.videoEl
 
     function onTimestampUpdate() {
       // fuck... it's absolute not necessary
@@ -68,10 +67,10 @@ export function Subtitles() {
       }
     }
 
-    videoRef.current.addEventListener('timeupdate', onTimestampUpdate)
+    videoEl.addEventListener('timeupdate', onTimestampUpdate)
 
     return () => {
-      videoRef.current?.removeEventListener('timeupdate', onTimestampUpdate)
+      videoEl.removeEventListener('timeupdate', onTimestampUpdate)
     }
   }, [currSubtitles.state])
 
@@ -101,22 +100,38 @@ export function Subtitles() {
       {currSubtitles.state === 'loading' && <Loading />}
       <div style={{ overflow: 'auto' }} ref={subtitlesRef} aria-hidden onClick={handleSubtitleClick}>
         {events.map((event, i) => (
-          <div
-            className={bcls(style.subtitle, index === i && style.currSubtitle, baseStyle.transitionColors)}
-            key={event.endMs}
-          >
-            <div className={style.timestamp}>
-              <button id="start-ms" data-start-ms={event.startMs} className={baseStyle.transitionColors} type="button">
-                {formatMillisecondsToHHMMSS(event.startMs)}
-              </button>
-              <button id="end-ms" data-end-ms={event.endMs} className={baseStyle.transitionColors} type="button">
-                {formatMillisecondsToHHMMSS(event.endMs)}
-              </button>
-            </div>
-            <p>{event.content}</p>
-          </div>
+          <Subtitle key={event.endMs} event={event} currentPlaying={i === index} />
         ))}
       </div>
     </section>
   )
 }
+
+interface SubtitleProps {
+  event: subtitleEvent
+  currentPlaying: boolean
+}
+
+const Subtitle = memo(
+  function Subtitle(props: SubtitleProps) {
+    const { event, currentPlaying } = props
+
+    return (
+      <div
+        className={bcls(style.subtitle, currentPlaying && style.currSubtitle, baseStyle.transitionColors)}
+        key={event.endMs}
+      >
+        <div className={style.timestamp}>
+          <button id="start-ms" data-start-ms={event.startMs} className={baseStyle.transitionColors} type="button">
+            {formatMillisecondsToHHMMSS(event.startMs)}
+          </button>
+          <button id="end-ms" data-end-ms={event.endMs} className={baseStyle.transitionColors} type="button">
+            {formatMillisecondsToHHMMSS(event.endMs)}
+          </button>
+        </div>
+        <p>{event.content}</p>
+      </div>
+    )
+  },
+  (prev, next) => prev.currentPlaying === next.currentPlaying,
+)

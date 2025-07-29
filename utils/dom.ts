@@ -1,4 +1,3 @@
-import { videoWrapperSelector } from "./const"
 
 export function waitForElement(selector: string) {
   return new Promise((resolve, reject) => {
@@ -23,7 +22,7 @@ export function waitForElement(selector: string) {
 }
 
 export function syncVideoElHeight() {
-  const videoEl = document.querySelector(videoElSelector) as HTMLVideoElement
+  const videoEl = appMetadata.videoEl
 
   const observer = new ResizeObserver(() => {
     const height = videoEl.style.getPropertyValue('height')
@@ -34,13 +33,6 @@ export function syncVideoElHeight() {
 }
 
 export function createLightsOffEl() {
-  const mountEl = document.querySelector<HTMLDivElement>(videoWrapperSelector)
-
-  if (!mountEl) {
-    console.error("can not find lights-off mount element, maybe the element's id changed")
-    return
-  }
-
   const styleEl = document.createElement('style')
 
   styleEl.innerHTML = `
@@ -65,25 +57,24 @@ export function createLightsOffEl() {
   })
   lightsOffEl.id = lightOffElSelector
   lightsOffEl.classList.add(lightsOffToggleClass)
-  mountEl.appendChild(lightsOffEl)
+  appMetadata.videoWrapperEl.appendChild(lightsOffEl)
+  appMetadata.lightsOffEl = lightsOffEl
 }
 
 export function toggleLights(): 'on' | 'off' {
-  const lightsOffEl = document.querySelector<HTMLDivElement>(`#${lightOffElSelector}`)
-  const mountEl = document.querySelector<HTMLDivElement>(videoWrapperSelector)
   const rootEl = document.querySelector<HTMLHtmlElement>('yooloop-ui')?.shadowRoot?.querySelector<HTMLHtmlElement>('html')
 
-  if (!lightsOffEl || !mountEl || !rootEl) return 'on'
+  if (!rootEl) return 'on'
 
-  if (lightsOffEl.classList.contains(lightsOffToggleClass)) {
-    lightsOffEl.classList.remove(lightsOffToggleClass)
-    mountEl.style.setProperty('z-index', '9999')
+  if (appMetadata.lightsOffEl.classList.contains(lightsOffToggleClass)) {
+    appMetadata.lightsOffEl.classList.remove(lightsOffToggleClass)
+    appMetadata.videoWrapperEl.style.setProperty('z-index', '9999')
     rootEl.style.setProperty('z-index', '9999')
     return 'off'
 
   } else {
-    lightsOffEl.classList.add(lightsOffToggleClass)
-    mountEl.style.setProperty('z-index', '0')
+    appMetadata.lightsOffEl.classList.add(lightsOffToggleClass)
+    appMetadata.videoWrapperEl.style.setProperty('z-index', '0')
     rootEl.style.setProperty('z-index', '0')
 
     return 'on'

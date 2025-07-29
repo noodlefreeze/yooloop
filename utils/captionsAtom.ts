@@ -94,14 +94,14 @@ function createCaptionIndexAtoms() {
 const [captionIndexAtom] = createCaptionIndexAtoms()
 
 // subtitles atom
-interface Event {
+export interface subtitleEvent {
   startMs: number
   endMs: number
   durMs: number
   content: string
 }
 interface Subtitle {
-  events: Event[]
+  events: subtitleEvent[]
 }
 
 interface YTSeg {
@@ -138,7 +138,7 @@ const subtitlesBaseAtom = atom(async (get) => {
     }
 
     const ytSubtitles = (await response.json()) as YTSubtitle
-    const events: Event[] = []
+    const events: subtitleEvent[] = []
 
     ytSubtitles.events.forEach((event) => {
       events.push({

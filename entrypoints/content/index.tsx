@@ -1,4 +1,5 @@
 import type { ContentScriptContext } from '#imports'
+import { appMetadata } from '@/utils/global'
 import '~/assets/main.css'
 import '~/assets/preflight.css'
 
@@ -7,7 +8,15 @@ export default defineContentScript({
   cssInjectionMode: 'ui',
   async main(ctx) {
     try {
-      await Promise.all([waitForElement(mountElSelector), waitForElement(videoElSelector)])
+      await Promise.all([
+        waitForElement(mountElSelector),
+        waitForElement(videoElSelector),
+        waitForElement(videoWrapperSelector),
+      ])
+
+      appMetadata.videoEl = document.querySelector<HTMLVideoElement>(videoElSelector) as HTMLVideoElement
+      appMetadata.videoWrapperEl = document.querySelector<HTMLDivElement>(videoWrapperSelector) as HTMLDivElement
+
       syncVideoElHeight()
       createLightsOffEl()
 
