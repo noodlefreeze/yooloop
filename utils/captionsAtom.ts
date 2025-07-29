@@ -101,6 +101,7 @@ export interface subtitleEvent {
   endMs: number
   durMs: number
   content: string
+  vssId: string
 }
 interface Subtitle {
   events: subtitleEvent[]
@@ -148,6 +149,7 @@ const subtitlesBaseAtom = atom(async (get) => {
         endMs: event.tStartMs + event.dDurationMs,
         durMs: event.dDurationMs,
         content: event.segs.map((seg) => seg.utf8).join(' '),
+        vssId: caption.vssId,
       })
     })
 
