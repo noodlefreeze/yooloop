@@ -39,6 +39,27 @@ pnpm build
 - **Build**: `pnpm build`
 - **Check**: `pnpm compile`
 
+## Release
+
+Create a new release automatically:
+
+```bash
+# Patch version (0.0.1 -> 0.0.2)
+pnpm release:patch
+
+# Minor version (0.0.1 -> 0.1.0)  
+pnpm release:minor
+
+# Major version (0.0.1 -> 1.0.0)
+pnpm release:major
+```
+
+This will:
+1. Update version in package.json
+2. Create a git tag
+3. Push to GitHub
+4. Trigger GitHub Actions to build and create release with ZIP files
+
 ## Structure
 
 ```
