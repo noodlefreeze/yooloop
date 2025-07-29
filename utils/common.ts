@@ -20,12 +20,15 @@ export async function getDefaultCaptionIndex(captions: Caption[]) {
 
   if (!userPreferred) userPreferred = 'en'
 
-  const index = captions.findIndex(caption => caption.languageCode === userPreferred)
+  const index = captions.findIndex((caption) => caption.languageCode === userPreferred)
 
   return index === -1 ? 0 : index
 }
 
-export function formatMillisecondsToHHMMSS(ms: number, defaultValue: string | undefined = undefined): string | undefined {
+export function formatMillisecondsToHHMMSS(
+  ms: number,
+  defaultValue: string | undefined = undefined,
+): string | undefined {
   if (!Number.isFinite(ms)) return defaultValue
 
   const totalSeconds = Math.floor(ms / 1000)

@@ -1,4 +1,3 @@
-
 export function waitForElement(selector: string) {
   return new Promise((resolve, reject) => {
     const observer = new MutationObserver(() => {
@@ -52,7 +51,7 @@ export function createLightsOffEl() {
     { property: 'background-color', value: 'black' },
   ]
 
-  styles.forEach(style => {
+  styles.forEach((style) => {
     lightsOffEl.style.setProperty(style.property, style.value)
   })
   lightsOffEl.id = lightOffElSelector
@@ -62,7 +61,9 @@ export function createLightsOffEl() {
 }
 
 export function toggleLights(): 'on' | 'off' {
-  const rootEl = document.querySelector<HTMLHtmlElement>('yooloop-ui')?.shadowRoot?.querySelector<HTMLHtmlElement>('html')
+  const rootEl = document
+    .querySelector<HTMLHtmlElement>('yooloop-ui')
+    ?.shadowRoot?.querySelector<HTMLHtmlElement>('html')
 
   if (!rootEl) return 'on'
 
@@ -71,7 +72,6 @@ export function toggleLights(): 'on' | 'off' {
     appMetadata.videoWrapperEl.style.setProperty('z-index', '9999')
     rootEl.style.setProperty('z-index', '9999')
     return 'off'
-
   } else {
     appMetadata.lightsOffEl.classList.add(lightsOffToggleClass)
     appMetadata.videoWrapperEl.style.setProperty('z-index', '0')

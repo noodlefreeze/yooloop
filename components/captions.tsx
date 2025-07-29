@@ -29,7 +29,7 @@ export function Captions() {
       id="captions"
     >
       {captions.map((caption, index) => (
-        <option value={index} key={caption.languageCode} data-language-code={caption.languageCode}>
+        <option value={index} key={caption.vssId} data-language-code={caption.languageCode}>
           {caption.name.simpleText}
         </option>
       ))}

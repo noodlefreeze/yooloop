@@ -6,3 +6,9 @@ export const asShowingClass = 'ad-showing'
 export const lightsOffToggleClass = 'lights-off-inactive'
 
 export const videoHeightCSSVariable = '--yooloop-height'
+
+export enum subtitleIdNames {
+  syncVideoTime = 'sync-video-time',
+  startLoop = 'start-loop',
+  endLoop = 'end-loop',
+}
