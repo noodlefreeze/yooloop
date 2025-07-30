@@ -53,7 +53,7 @@ const captionsBaseAtom = atom(async (get) => {
         const captions = JSON.parse(content.slice(startIndex + startStr.length, endIndex))
           .playerCaptionsTracklistRenderer.captionTracks as Caption[]
 
-        return captions
+        return captions.filter((c) => !c.vssId.startsWith('a.'))
       }
 
       break
@@ -113,7 +113,7 @@ interface YTSeg {
 interface YTEvent {
   dDurationMs: number
   tStartMs: number
-  segs: YTSeg[]
+  segs?: YTSeg[]
 }
 interface YTSubtitle {
   events: YTEvent[]
@@ -124,7 +124,16 @@ const subtitlesBaseAtom = atom(async (get) => {
   const captionIndex = await get(captionIndexAtom)
 
   if (captions.state === 'hasData' && captionIndex < captions.data.length) {
-    const pot = (await storage.getItem('local:pot')) as string
+    let pot = (await getPot()) as string
+    // If the POT token is not available, wait until the ad finishes to get it.
+    // If the POT token is already available, speed up the ad without waiting.
+    if (!pot) {
+      await speedAdShowing()
+    } else {
+      speedAdShowing()
+    }
+    pot = (await getPot()) as string
+
     const caption = captions.data[captionIndex]
     const url = new URL(caption.baseUrl)
 
@@ -144,15 +153,21 @@ const subtitlesBaseAtom = atom(async (get) => {
     const events: subtitleEvent[] = []
 
     ytSubtitles.events.forEach((event) => {
+      if (!event.segs || event.segs.length === 0 || (event.segs.length === 1 && event.segs[0].utf8 === '\n')) return
+
       events.push({
         startMs: event.tStartMs,
         endMs: event.tStartMs + event.dDurationMs,
         durMs: event.dDurationMs,
-        content: event.segs.map((seg) => seg.utf8).join(' '),
         vssId: caption.vssId,
+        content: event.segs
+          .filter((seg) => seg.utf8 && seg.utf8 !== '\n')
+          .map((seg) => seg.utf8)
+          .join(' '),
       })
     })
 
+    console.log(events)
     const subtitles: Subtitle = { events }
 
     return subtitles

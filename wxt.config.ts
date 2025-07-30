@@ -5,6 +5,12 @@ export default defineConfig({
   manifest: {
     permissions: ['webRequest', 'storage'],
     host_permissions: ['https://www.youtube.com/watch?v=*'],
+    web_accessible_resources: [
+      {
+        matches: ["*://*/*"],     
+        resources: ['injected.js'],
+      }
+    ]
   },
   manifestVersion: 3,
 })
