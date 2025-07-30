@@ -10,7 +10,13 @@ export default defineConfig({
         matches: ["https://www.youtube.com/*"],     
         resources: ['injected.js'],
       }
-    ]
+    ],
+    browser_specific_settings: {
+      "gecko": {
+        "id": "noodlefreeze@gmail.com",
+        "strict_min_version": "109.0"
+      }
+    }
   },
   manifestVersion: 3,
 })
