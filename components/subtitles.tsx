@@ -7,6 +7,7 @@ export function Subtitles() {
   const [currSubtitles, prevSubtitles] = useAtomValue(subtitlesAtom)
   const setLoopController = useSetAtom(setLoopControllerAtom)
   const loopController = useAtomValue(loopControllerAtom)
+  const captionsLoader = useAtomValue(captionsAtom)
   const [index, setIndex] = useState(0)
   const indexRef = useRef<number>(index)
   const subtitlesRef = useRef<HTMLDivElement>(null)
@@ -106,7 +107,7 @@ export function Subtitles() {
         const startMs = subtitleEl.dataset.startMs
         if (!startMs) return
 
-        appMetadata.videoEl.currentTime = (parseFloat(startMs) + 1) / 1000
+        appMetadata.videoEl.currentTime = parseFloat(startMs) / 1000
       }
 
       if (target.tagName === 'BUTTON') {
@@ -135,6 +136,7 @@ export function Subtitles() {
   )
 
   if (currSubtitles.state === 'hasError') {
+    console.error(currSubtitles.error)
     return 'todo: error handler'
   }
 
@@ -145,14 +147,25 @@ export function Subtitles() {
         ? prevSubtitles.data.events
         : []
 
+  // TODO: Refactor this shit...
   return (
     <section className={bcls(style.subtitles, currSubtitles.state === 'loading' && style.loading)}>
-      {currSubtitles.state === 'loading' && <Loading />}
-      <div style={{ overflow: 'auto' }} ref={subtitlesRef} aria-hidden onClick={handleSubtitleClick}>
-        {events.map((event, i) => (
-          <Subtitle key={event.endMs + event.vssId} event={event} currentPlaying={i === index} />
-        ))}
-      </div>
+      {(currSubtitles.state === 'loading' || captionsLoader.state === 'loading') && (
+        <Loading text={adShowing() ? 'Please wait until the ad finishes' : undefined} />
+      )}
+      {captionsLoader.state === 'hasData' && currSubtitles.state === 'hasData' && events.length === 0 ? (
+        <div className={style.emptySubtitles}>
+          <p>No subtitles found for this video.</p>
+          <p>Auto-generated ones were ignored,</p>
+          <p>due to poor timestamp quality.</p>
+        </div>
+      ) : (
+        <div style={{ overflow: 'auto' }} ref={subtitlesRef} aria-hidden onClick={handleSubtitleClick}>
+          {events.map((event, i) => (
+            <Subtitle key={`${event.durMs}_${event.endMs}_${event.vssId}`} event={event} currentPlaying={i === index} />
+          ))}
+        </div>
+      )}
     </section>
   )
 }

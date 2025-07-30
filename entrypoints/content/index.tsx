@@ -14,6 +14,10 @@ export default defineContentScript({
         waitForElement(videoWrapperSelector),
       ])
 
+      await injectScript('/injected.js', {
+        keepInDom: true,
+      })
+
       appMetadata.videoEl = document.querySelector<HTMLVideoElement>(videoElSelector) as HTMLVideoElement
       appMetadata.videoWrapperEl = document.querySelector<HTMLDivElement>(videoWrapperSelector) as HTMLDivElement
 

@@ -12,3 +12,9 @@ export enum subtitleIdNames {
   startLoop = 'start-loop',
   endLoop = 'end-loop',
 }
+
+export enum messageKeys {
+  contentSource = 'yooloop-message-content-source',
+  injectSource = 'yooloop-message-inject-source',
+  refreshPot = 'refresh-pot',
+}

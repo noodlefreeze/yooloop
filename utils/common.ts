@@ -1,6 +1,6 @@
 export function isValidVideoUrl(url: string) {
-  const standardRegex = /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}$/
-  const shortRegex = /^https:\/\/youtu\.be\/[\w-]{11}$/
+  const standardRegex = /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}/
+  const shortRegex = /^https:\/\/youtu\.be\/[\w-]{11}/
 
   return standardRegex.test(url) || shortRegex.test(url)
 }
@@ -48,3 +48,39 @@ export function formatMillisecondsToHHMMSS(
 }
 
 export const adShowing = () => appMetadata.videoWrapperEl.classList.contains('ad-showing')
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+export function speedAdShowing() {
+  return new Promise((resolve) => {
+    const intervalId = setInterval(() => {
+      if (!adShowing()) {
+        clearInterval(intervalId)
+        appMetadata.videoEl.playbackRate = 1
+        sleep(500).then(resolve)
+      } else {
+        appMetadata.videoEl.playbackRate = 4
+      }
+    }, 500)
+  })
+}
+
+export async function getPot() {
+  return new Promise((resolve) => {
+    function handleResponse(event: MessageEvent) {
+      if (event.data?.source !== messageKeys.injectSource) return
+
+      window.removeEventListener('message', handleResponse)
+      resolve(event.data.payload)
+    }
+
+    window.addEventListener('message', handleResponse)
+
+    window.postMessage({
+      source: messageKeys.contentSource,
+      action: messageKeys.refreshPot,
+    })
+  })
+}
