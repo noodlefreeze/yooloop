@@ -1,6 +1,6 @@
 {
-  "name": "youloop",
-  "description": "manifest.json description",
+  "name": "yooloop",
+  "description": "A browser extension for YouTube that adds subtitle interaction and video looping features.",
   "private": true,
   "version": "1.0.1",
   "type": "module",
