@@ -7,7 +7,7 @@ export default defineConfig({
     host_permissions: ['https://www.youtube.com/watch?v=*'],
     web_accessible_resources: [
       {
-        matches: ["*://*/*"],     
+        matches: ["https://www.youtube.com/*"],     
         resources: ['injected.js'],
       }
     ]
