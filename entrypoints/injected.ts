@@ -24,7 +24,7 @@ const d = defineUnlistedScript(async () => {
     let payload: unknown
 
     switch (event.data.action) {
-      case messageKeys.refreshPot:
+      case actionKeys.refreshPot:
         payload = getPot()
         break
       default:

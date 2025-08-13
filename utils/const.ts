@@ -16,5 +16,15 @@ export enum subtitleIdNames {
 export enum messageKeys {
   contentSource = 'yooloop-message-content-source',
   injectSource = 'yooloop-message-inject-source',
+  backgroundSource = 'yooloop-message-background-source',
+}
+
+export enum actionKeys {
   refreshPot = 'refresh-pot',
+  openIDBFailed = 'open-idb-failed',
+  openIDBSuccess = 'open-idb-success',
+  pingIDB = 'ping-idb',
+  connectIDB = 'connect-idb',
+  addShadowing = 'add-shadowing',
+  getAllShadowing = 'get-all-shadowing',
 }

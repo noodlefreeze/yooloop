@@ -9,3 +9,9 @@ export const appMetadata: AppMetadata = {
   videoWrapperEl: null as unknown as HTMLDivElement,
   lightsOffEl: null as unknown as HTMLDivElement,
 }
+
+export interface IDBMessage {
+  source: string
+  action: string
+  payload?: unknown
+}

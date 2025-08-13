@@ -80,7 +80,7 @@ export async function getPot() {
 
     window.postMessage({
       source: messageKeys.contentSource,
-      action: messageKeys.refreshPot,
+      action: actionKeys.refreshPot,
     })
   })
 }
