@@ -1,5 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import '~/assets/main.css'
+import '~/assets/preflight.css'
 import { App } from './app.tsx'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(

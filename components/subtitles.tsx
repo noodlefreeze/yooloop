@@ -1,7 +1,7 @@
 import { useAtomValue, useSetAtom } from 'jotai'
 import { type MouseEvent, memo } from 'react'
-import baseStyle from '~/assets/base.module.scss'
-import style from '~/assets/subtitles.module.scss'
+import baseStyle from '~/assets/content/base.module.scss'
+import style from '~/assets/content/subtitles.module.scss'
 
 export function Subtitles() {
   const [currSubtitles, prevSubtitles] = useAtomValue(subtitlesAtom)

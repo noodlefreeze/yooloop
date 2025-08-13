@@ -1,5 +1,4 @@
 import type { ContentScriptContext } from '#imports'
-import { appMetadata } from '@/utils/global'
 import '~/assets/main.css'
 import '~/assets/preflight.css'
 

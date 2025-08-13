@@ -1,4 +1,4 @@
-import baseStyle from '~/assets/base.module.scss'
+import baseStyle from '~/assets/content/base.module.scss'
 
 interface LoadingProps {
   text?: string

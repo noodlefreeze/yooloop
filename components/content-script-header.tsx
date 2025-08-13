@@ -1,9 +1,9 @@
 import * as Tooltip from '@radix-ui/react-tooltip'
 import { useAtomValue, useSetAtom } from 'jotai'
-import baseStyle from '~/assets/base.module.scss'
-import style from '~/assets/header.module.scss'
+import baseStyle from '~/assets/content/base.module.scss'
+import style from '~/assets/content/header.module.scss'
 
-export function Header() {
+export function ContentScriptHeader() {
   return (
     <header className={style.header}>
       <Tooltip.Provider delayDuration={200}>

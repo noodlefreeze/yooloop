@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai'
 import type { ChangeEvent } from 'react'
-import baseStyle from '~/assets/base.module.scss'
+import baseStyle from '~/assets/content/base.module.scss'
 
 export function Captions() {
   const [captionsLoader] = useAtom(captionsAtom)
