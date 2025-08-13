@@ -13,5 +13,5 @@ export const appMetadata: AppMetadata = {
 export interface IDBMessage {
   source: string
   action: string
-  payload?: unknown
+  payload: Record<string, unknown>
 }

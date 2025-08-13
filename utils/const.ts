@@ -23,7 +23,6 @@ export enum actionKeys {
   refreshPot = 'refresh-pot',
   openIDBFailed = 'open-idb-failed',
   openIDBSuccess = 'open-idb-success',
-  pingIDB = 'ping-idb',
   connectIDB = 'connect-idb',
   addShadowing = 'add-shadowing',
   getAllShadowing = 'get-all-shadowing',
