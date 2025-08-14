@@ -7,8 +7,8 @@ export default defineConfig({
     host_permissions: ['https://www.youtube.com/watch?v=*'],
     web_accessible_resources: [
       {
+        resources: ['refresh-pot.js', 'bridge-iframe.js', 'iframe.html'],
         matches: ["https://www.youtube.com/*"],     
-        resources: ['injected.js'],
       },
     ],
     browser_specific_settings: {

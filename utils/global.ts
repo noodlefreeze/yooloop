@@ -2,6 +2,7 @@ interface AppMetadata {
   videoEl: HTMLVideoElement
   videoWrapperEl: HTMLDivElement
   lightsOffEl: HTMLDivElement
+  bridgeIfr?: HTMLIFrameElement
 }
 
 export const appMetadata: AppMetadata = {
@@ -14,4 +15,8 @@ export interface IDBMessage {
   source: string
   action: string
   payload: Record<string, unknown>
+}
+
+export interface IDBCRUD {
+  addShadowing(): Promise<number>
 }

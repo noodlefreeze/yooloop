@@ -167,7 +167,6 @@ const subtitlesBaseAtom = atom(async (get) => {
       })
     })
 
-    console.log(events)
     const subtitles: Subtitle = { events }
 
     return subtitles

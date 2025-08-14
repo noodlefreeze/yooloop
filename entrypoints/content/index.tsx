@@ -13,7 +13,7 @@ export default defineContentScript({
         waitForElement(videoWrapperSelector),
       ])
 
-      await injectScript('/injected.js', {
+      await injectScript('/refresh-pot.js', {
         keepInDom: true,
       })
 

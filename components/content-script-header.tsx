@@ -1,5 +1,6 @@
 import * as Tooltip from '@radix-ui/react-tooltip'
 import { useAtomValue, useSetAtom } from 'jotai'
+import { useEffect } from 'react'
 import baseStyle from '~/assets/content/base.module.scss'
 import style from '~/assets/content/header.module.scss'
 
@@ -24,8 +25,37 @@ export function ContentScriptHeader() {
 function ShadowingToggler() {
   const [startShadowing, setStartShadowing] = useState(false)
   const mediaRecorder = useRef<null | MediaRecorder>(null)
+  const [bridgeIframeStatus, setBridgeIframeStatus] = useState<'ready' | 'succeed' | 'failed'>('ready')
+  const ipcRef = useRef(null)
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: fuck effect
+  useEffect(() => {
+    async function setupIpc() {
+      const result = (await browser.runtime.sendMessage({
+        action: actionKeys.injectBridgeFrame,
+        source: messageKeys.contentSource,
+      })) as { success: false } | { success: true; tabId: number; origin: string }
+      if (!result.success) {
+        setBridgeIframeStatus('failed')
+        return
+      }
+
+      const ifr = document.getElementById(bridgeIframeId) as HTMLIFrameElement
+
+      ifr.onload = () => {
+        if (!ifr.contentWindow) return
+
+        appMetadata.bridgeIfr = ifr
+        setBridgeIframeStatus('succeed')
+      }
+    }
+
+    setupIpc()
+  }, [])
 
   async function handleClick() {
+    if (bridgeIframeStatus !== 'succeed' || !appMetadata.bridgeIfr) return
+
     setStartShadowing(!startShadowing)
 
     if (startShadowing) {
@@ -45,7 +75,6 @@ function ShadowingToggler() {
     const audioChunks: Blob[] = []
 
     mediaRecorder.current = new MediaRecorder(stream)
-
     mediaRecorder.current.ondataavailable = (e) => {
       if (e.data.size > 0) {
         audioChunks.push(e.data)
@@ -55,12 +84,20 @@ function ShadowingToggler() {
       const audioType = 'audio/webm'
 
       new Blob(audioChunks, { type: audioType }).arrayBuffer().then((buffer) => {
-        const payload = {
+        if (!appMetadata.bridgeIfr?.contentWindow) return
+
+        const payload: {
+          audioType: string
+          title: string
+          startMs: number
+          vid: string
+          audio: ArrayBuffer
+        } = {
           audioType,
           title: document.title,
           startMs: appMetadata.videoEl.currentTime * 1000,
           vid: getSearchParam('v') as string,
-          audio: new Uint8Array(buffer),
+          audio: buffer,
         }
         const message = {
           payload,
@@ -68,7 +105,7 @@ function ShadowingToggler() {
           action: actionKeys.addShadowing,
         }
 
-        browser.runtime.sendMessage(message)
+        appMetadata.bridgeIfr.contentWindow.postMessage(message, new URL(appMetadata.bridgeIfr.src).origin, [buffer])
       })
     }
     mediaRecorder.current.start()
@@ -78,12 +115,21 @@ function ShadowingToggler() {
     <Tooltip.Root>
       <Tooltip.Trigger
         onClick={handleClick}
+        disabled={bridgeIframeStatus !== 'succeed'}
         className={bcls(startShadowing && baseStyle.active, baseStyle.iconBtn, baseStyle.transitionColors)}
       >
         <Mic />
       </Tooltip.Trigger>
       <Tooltip.Content className={baseStyle.tooltipContent}>
-        <p>{startShadowing ? 'Stop shadowing' : 'Start shadowing'}</p>
+        <p>
+          {bridgeIframeStatus === 'ready'
+            ? 'Initializing...'
+            : bridgeIframeStatus === 'failed'
+              ? 'Connection failed'
+              : startShadowing
+                ? 'Stop shadowing'
+                : 'Start shadowing'}
+        </p>
         <Tooltip.Arrow className={baseStyle.tooltipArrow} />
       </Tooltip.Content>
     </Tooltip.Root>
