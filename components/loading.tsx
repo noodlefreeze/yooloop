@@ -1,8 +1,5 @@
 import baseStyle from '~/assets/content/base.module.scss'
-
-interface LoadingProps {
-  text?: string
-}
+import type { LoadingProps } from '~/types/components'
 
 export function Loading(props: LoadingProps) {
   const { text } = props

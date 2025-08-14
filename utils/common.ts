@@ -1,3 +1,6 @@
+import type { Part } from '~/types/core'
+import type { Caption } from '~/types/youtube'
+
 export function isValidVideoUrl(url: string) {
   const standardRegex = /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}/
   const shortRegex = /^https:\/\/youtu\.be\/[\w-]{11}/
@@ -8,8 +11,6 @@ export function isValidVideoUrl(url: string) {
 export function getSearchParam(key: string) {
   return new URLSearchParams(location.search).get(key)
 }
-
-type Part = string | boolean | undefined
 
 export function bcls(...parts: Part[]) {
   return parts.filter(Boolean).join(' ')

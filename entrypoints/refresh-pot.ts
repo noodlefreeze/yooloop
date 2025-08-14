@@ -1,12 +1,4 @@
-interface InjectedCaption extends Caption {
-  url: string
-}
-
-export interface VideoWrapperElement extends HTMLDivElement {
-  getAudioTrack(): {
-    captionTracks: InjectedCaption[]
-  }
-}
+import type { VideoWrapperElement } from '~/types/youtube'
 
 export default defineUnlistedScript(async () => {
   function getPot() {

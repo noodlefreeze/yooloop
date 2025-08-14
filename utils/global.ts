@@ -1,9 +1,4 @@
-interface AppMetadata {
-  videoEl: HTMLVideoElement
-  videoWrapperEl: HTMLDivElement
-  lightsOffEl: HTMLDivElement
-  bridgeIfr?: HTMLIFrameElement
-}
+import type { AppMetadata } from '../types/core'
 
 export const appMetadata: AppMetadata = {
   videoEl: null as unknown as HTMLVideoElement,
@@ -11,12 +6,5 @@ export const appMetadata: AppMetadata = {
   lightsOffEl: null as unknown as HTMLDivElement,
 }
 
-export interface IDBMessage {
-  source: string
-  action: string
-  payload: Record<string, unknown>
-}
-
-export interface IDBCRUD {
-  addShadowing(): Promise<number>
-}
+export type { AppMetadata, IDBCRUD } from '../types/core'
+export type { IDBMessage } from '../types/messaging'

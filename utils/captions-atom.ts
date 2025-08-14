@@ -2,6 +2,8 @@
 import { atom, type Getter, type Setter } from 'jotai'
 import { withHistory } from 'jotai-history'
 import { loadable } from 'jotai/utils'
+import type { Loop } from '~/types/core'
+import type { Caption, Subtitle, subtitleEvent, YTSubtitle } from '~/types/youtube'
 
 // videoId atom
 function createVideoIdAtoms(initialValue: string) {
@@ -15,17 +17,6 @@ function createVideoIdAtoms(initialValue: string) {
 const [videoIdAtom, setVideoIdAtom] = createVideoIdAtoms(getSearchParam('v') as string)
 
 // captions atom
-export interface Caption {
-  baseUrl: string
-  name: {
-    simpleText: string
-  }
-  vssId: string
-  languageCode: string
-  kind?: string
-  isTranslatable: string
-  trackName: string
-}
 
 const captionsBaseAtom = atom(async (get) => {
   const response = await fetch(`https://www.youtube.com/watch?v=${get(videoIdAtom)}`, {
@@ -96,28 +87,6 @@ function createCaptionIndexAtoms() {
 const [captionIndexAtom] = createCaptionIndexAtoms()
 
 // subtitles atom
-export interface subtitleEvent {
-  startMs: number
-  endMs: number
-  durMs: number
-  content: string
-  vssId: string
-}
-interface Subtitle {
-  events: subtitleEvent[]
-}
-
-interface YTSeg {
-  utf8: string
-}
-interface YTEvent {
-  dDurationMs: number
-  tStartMs: number
-  segs?: YTSeg[]
-}
-interface YTSubtitle {
-  events: YTEvent[]
-}
 
 const subtitlesBaseAtom = atom(async (get) => {
   const captions = get(captionsAtom)
@@ -177,11 +146,6 @@ const subtitlesBaseAtom = atom(async (get) => {
 const subtitlesAtom = withHistory(loadable(subtitlesBaseAtom), 2)
 
 // loop controller atom
-interface Loop {
-  startMs?: number
-  endMs?: number
-  looping: boolean
-}
 
 function createLoopControllerAtoms() {
   const baseAtom = atom<Loop>({

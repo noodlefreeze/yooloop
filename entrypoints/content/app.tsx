@@ -1,12 +1,7 @@
-// biome-ignore assist/source/organizeImports: biome bug
-import type { ContentScriptContext } from '#imports'
 import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 import baseStyle from '~/assets/content/base.module.scss'
-
-interface AppProps {
-  ctx: ContentScriptContext
-}
+import type { AppProps } from '~/types/components'
 
 export default function App(props: AppProps) {
   const { ctx } = props

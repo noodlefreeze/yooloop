@@ -2,6 +2,7 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { type MouseEvent, memo } from 'react'
 import baseStyle from '~/assets/content/base.module.scss'
 import style from '~/assets/content/subtitles.module.scss'
+import type { SubtitleProps } from '~/types/components'
 
 export function Subtitles() {
   const [currSubtitles, prevSubtitles] = useAtomValue(subtitlesAtom)
@@ -168,11 +169,6 @@ export function Subtitles() {
       )}
     </section>
   )
-}
-
-interface SubtitleProps {
-  event: subtitleEvent
-  currentPlaying: boolean
 }
 
 const Subtitle = memo(
