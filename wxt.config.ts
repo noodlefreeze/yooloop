@@ -9,7 +9,7 @@ export default defineConfig({
       {
         matches: ["https://www.youtube.com/*"],     
         resources: ['injected.js'],
-      }
+      },
     ],
     browser_specific_settings: {
       "gecko": {

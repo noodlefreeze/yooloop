@@ -12,11 +12,81 @@ export function ContentScriptHeader() {
           <LoopController />
         </div>
         <div className={style.right}>
+          <ShadowingToggler />
           <LoopToggler />
           <LightToggler />
         </div>
       </Tooltip.Provider>
     </header>
+  )
+}
+
+function ShadowingToggler() {
+  const [startShadowing, setStartShadowing] = useState(false)
+  const mediaRecorder = useRef<null | MediaRecorder>(null)
+
+  async function handleClick() {
+    setStartShadowing(!startShadowing)
+
+    if (startShadowing) {
+      // handle stop shadowing
+      if (!mediaRecorder.current) return
+      mediaRecorder.current.stop()
+      return
+    }
+
+    // handle start shadowing
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    if (!stream.active) {
+      // do nothing
+      return
+    }
+
+    const audioChunks: Blob[] = []
+
+    mediaRecorder.current = new MediaRecorder(stream)
+
+    mediaRecorder.current.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        audioChunks.push(e.data)
+      }
+    }
+    mediaRecorder.current.onstop = () => {
+      const audioType = 'audio/webm'
+
+      new Blob(audioChunks, { type: audioType }).arrayBuffer().then((buffer) => {
+        const payload = {
+          audioType,
+          title: document.title,
+          startMs: appMetadata.videoEl.currentTime * 1000,
+          vid: getSearchParam('v') as string,
+          audio: new Uint8Array(buffer),
+        }
+        const message = {
+          payload,
+          source: messageKeys.contentSource,
+          action: actionKeys.addShadowing,
+        }
+
+        browser.runtime.sendMessage(message)
+      })
+    }
+    mediaRecorder.current.start()
+  }
+
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger
+        onClick={handleClick}
+        className={bcls(startShadowing && baseStyle.active, baseStyle.iconBtn, baseStyle.transitionColors)}
+      >
+        <Mic />
+      </Tooltip.Trigger>
+      <Tooltip.Content className={baseStyle.tooltipContent}>
+        <p>{startShadowing ? 'Stop shadowing' : 'Start shadowing'}</p>
+        <Tooltip.Arrow className={baseStyle.tooltipArrow} />
+      </Tooltip.Content>
+    </Tooltip.Root>
   )
 }
 

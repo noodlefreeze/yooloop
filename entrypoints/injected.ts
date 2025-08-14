@@ -8,7 +8,7 @@ export interface VideoWrapperElement extends HTMLDivElement {
   }
 }
 
-const d = defineUnlistedScript(async () => {
+export default defineUnlistedScript(async () => {
   function getPot() {
     const el = document.querySelector(videoWrapperSelector) as VideoWrapperElement
     const captionTracks = el.getAudioTrack().captionTracks
@@ -34,5 +34,3 @@ const d = defineUnlistedScript(async () => {
     window.postMessage({ source: messageKeys.injectSource, payload }, window.origin)
   })
 })
-
-export default d

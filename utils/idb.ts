@@ -51,11 +51,13 @@ async function getStore(mode: IDBTransactionMode): Promise<IDBObjectStore> {
   return database.transaction(STORE_NAME, mode).objectStore(STORE_NAME)
 }
 
-export async function addShadowing(data: Pick<Shadowing, UserShadowing>) {
+export async function addShadowing(data: Record<string, any>) {
   const store = await getStore('readwrite')
   const now = Date.now()
   return new Promise((resolve, reject) => {
-    const req = store.add({ ...data, createdAt: now, updatedAt: now })
+    const { audio, audioType, ...rest } = data
+    const blob = new Blob([audio], { type: audioType })
+    const req = store.add({ ...rest, audio: blob, createdAt: now, updatedAt: now })
     req.onsuccess = () => {
       resolve({ success: true, id: req.result as number })
     }
