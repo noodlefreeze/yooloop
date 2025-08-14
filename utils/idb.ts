@@ -1,14 +1,4 @@
-export interface Shadowing {
-  title: string
-  startMs: number
-  vid: string
-  audio: Blob
-  id: number
-  createdAt: number
-  updatedAt: number
-}
-
-export type UserShadowing = 'title' | 'startMs' | 'vid' | 'audio'
+import type { Shadowing, AddShadowingData } from '../types/database'
 
 let db: IDBDatabase | null = null
 const DB_NAME = 'yooloop'
@@ -51,7 +41,7 @@ async function getStore(mode: IDBTransactionMode): Promise<IDBObjectStore> {
   return database.transaction(STORE_NAME, mode).objectStore(STORE_NAME)
 }
 
-export async function addShadowing(data: Record<string, any>) {
+export async function addShadowing(data: AddShadowingData) {
   const store = await getStore('readwrite')
   const now = Date.now()
   return new Promise((resolve, reject) => {
