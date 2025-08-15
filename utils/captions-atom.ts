@@ -1,7 +1,4 @@
-// biome-ignore assist/source/organizeImports: biome bug
 import { atom, type Getter, type Setter } from 'jotai'
-import { withHistory } from 'jotai-history'
-import { loadable } from 'jotai/utils'
 import type { Loop } from '~/types/core'
 import type { Caption, Subtitle, subtitleEvent, YTSubtitle } from '~/types/youtube'
 
@@ -143,7 +140,7 @@ const subtitlesBaseAtom = atom(async (get) => {
 
   return { events: [] }
 })
-const subtitlesAtom = withHistory(loadable(subtitlesBaseAtom), 2)
+const subtitlesAtom = loadable(subtitlesBaseAtom)
 
 // loop controller atom
 

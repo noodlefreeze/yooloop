@@ -5,7 +5,7 @@ import style from '~/assets/content/subtitles.module.scss'
 import type { SubtitleProps } from '~/types/components'
 
 export function Subtitles() {
-  const [currSubtitles, prevSubtitles] = useAtomValue(subtitlesAtom)
+  const subtitles = useAtomValue(subtitlesAtom)
   const setLoopController = useSetAtom(setLoopControllerAtom)
   const loopController = useAtomValue(loopControllerAtom)
   const captionsLoader = useAtomValue(captionsAtom)
@@ -33,16 +33,16 @@ export function Subtitles() {
   }, [index])
 
   useEffect(() => {
-    if (currSubtitles.state !== 'hasData' || currSubtitles.data.events.length === 0) return
+    if (subtitles.state !== 'hasData' || subtitles.data.events.length === 0) return
 
     const videoEl = appMetadata.videoEl
 
     function onTimestampUpdate() {
       // fuck... it's absolute not necessary
-      if (currSubtitles.state !== 'hasData' || appMetadata.videoEl.paused) return
+      if (subtitles.state !== 'hasData' || appMetadata.videoEl.paused) return
 
       const currentTime = videoEl.currentTime * 1000
-      const events = currSubtitles.data.events
+      const events = subtitles.data.events
 
       // skip if ad is showing or video time is before first subtitle
       if (adShowing() || currentTime < events[0].startMs) return
@@ -91,7 +91,7 @@ export function Subtitles() {
     return () => {
       videoEl.removeEventListener('timeupdate', onTimestampUpdate)
     }
-  }, [currSubtitles.state, loopController])
+  }, [subtitles.state, loopController])
 
   const handleSubtitleClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -136,25 +136,25 @@ export function Subtitles() {
     [setLoopController],
   )
 
-  if (currSubtitles.state === 'hasError') {
-    console.error(currSubtitles.error)
+  if (subtitles.state === 'hasError') {
+    console.error(subtitles.error)
     return 'todo: error handler'
   }
 
   const events =
-    currSubtitles.state === 'hasData'
-      ? currSubtitles.data.events
-      : prevSubtitles?.state === 'hasData'
-        ? prevSubtitles.data.events
+    subtitles.state === 'hasData'
+      ? subtitles.data.events
+      : subtitles.state === 'loading' && subtitles.data
+        ? subtitles.data.events
         : []
 
   // TODO: Refactor this shit...
   return (
-    <section className={bcls(style.subtitles, currSubtitles.state === 'loading' && style.loading)}>
-      {(currSubtitles.state === 'loading' || captionsLoader.state === 'loading') && (
+    <section className={bcls(style.subtitles, subtitles.state === 'loading' && style.loading)}>
+      {(subtitles.state === 'loading' || captionsLoader.state === 'loading') && (
         <Loading text={adShowing() ? 'Please wait until the ad finishes' : undefined} />
       )}
-      {captionsLoader.state === 'hasData' && currSubtitles.state === 'hasData' && events.length === 0 ? (
+      {captionsLoader.state === 'hasData' && subtitles.state === 'hasData' && events.length === 0 ? (
         <div className={style.emptySubtitles}>
           <p>No subtitles found for this video.</p>
           <p>Auto-generated ones were ignored,</p>
