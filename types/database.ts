@@ -18,7 +18,10 @@ export interface AddShadowingData {
   title: string;
   startMs: number;
   vid: string;
-  audio: ArrayBuffer;
-  audioType: string;
 }
 
+export interface AddAudioData {
+  audio: ArrayBuffer;
+  audioType: string;
+  shadowingId: number
+}

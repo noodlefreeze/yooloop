@@ -1,86 +1,130 @@
-import type { Shadowing, AddShadowingData } from '../types/database'
+import type { Table } from 'dexie'
+import Dexie from 'dexie'
 
-let db: IDBDatabase | null = null
-const DB_NAME = 'yooloop'
-export const STORE_NAME = 'shadowing'
-const VERSION = 1
+interface ShadowingMetadata {
+  id?: number
+  vid: string
+  createdAt: number
+}
 
-export async function openDb(): Promise<IDBDatabase> {
-  if (db) return db
+interface ShadowingAudio {
+  id?: number
+  metadataId: number
+  createdAt: number
+  updatedAt: number
+  startMs: number
+  audio: Blob
+  title?: string
+}
 
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, VERSION)
+class ShadowingDB extends Dexie {
+  metadata!: Table<ShadowingMetadata, number>
+  audio!: Table<ShadowingAudio, number>
 
-    request.onupgradeneeded = () => {
-      const database = request.result
-      if (!database.objectStoreNames.contains(STORE_NAME)) {
-        database.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true })
+  constructor() {
+    super('shadowingDB')
+
+    this.version(1).stores({
+      shadowingMetadata: '++id, &vid, createdAt',
+      shadowingAudio: '++id, metadataId, createdAt, updatedAt, startMs, audio',
+    })
+    this.metadata = this.table('shadowingMetadata')
+    this.audio = this.table('shadowingAudio')
+  }
+
+  async addShadowing(vid: string, audioBlob: Blob, startMs: number): Promise<number> {
+    return this.transaction('rw', this.metadata, this.audio, async () => {
+      let meta = await this.metadata.where('vid').equals(vid).first()
+
+      if (!meta) {
+        // create meta record
+        const createdAt = Date.now()
+        const metadataId = await this.metadata.add({ vid, createdAt })
+        meta = { id: metadataId, vid, createdAt }
       }
-    }
 
-    request.onsuccess = () => {
-      db = request.result
+      // create audio record
+      const now = Date.now()
+      const audioId = await this.audio.add({
+        startMs,
+        metadataId: meta.id as number,
+        createdAt: now,
+        updatedAt: now,
+        audio: audioBlob,
+      })
 
-      db.onclose = () => {
-        db = null
+      return audioId
+    })
+  }
+
+  async getAudiosByVid(vid: string): Promise<ShadowingAudio[]> {
+    const meta = await this.metadata.where('vid').equals(vid).first()
+    if (!meta) return []
+    return this.audio
+      .where('metadataId')
+      .equals(meta.id as number)
+      .toArray()
+  }
+
+  async getAllMetadataWithAudios(): Promise<(ShadowingMetadata & { audios: Omit<ShadowingAudio, 'audio'>[] })[]> {
+    const allMetadata = await this.metadata.toArray()
+
+    return Promise.all(
+      allMetadata.map(async (meta) => {
+        const audios = await this.audio
+          .where('metadataId')
+          .equals(meta.id as number)
+          .toArray()
+
+        // omit audio
+        const audiosWithoutBlob: Omit<ShadowingAudio, 'audio'>[] = audios.map((a) => {
+          const { audio, ...rest } = a
+
+          return rest
+        })
+
+        return { ...meta, audios: audiosWithoutBlob }
+      }),
+    )
+  }
+
+  async deleteAudio(audioId: number) {
+    return this.transaction('rw', this.metadata, this.audio, async () => {
+      const audio = await this.audio.get(audioId)
+      if (!audio) return 0
+
+      await this.audio.delete(audioId)
+
+      const metadataId = audio.metadataId
+      // check if there are any other audio records under this metadata
+      const remainingCount = await this.audio.where('metadataId').equals(metadataId).count()
+      // if there are no remaining audio records, delete the corresponding metadata
+      if (remainingCount === 0) {
+        await this.metadata.delete(metadataId)
       }
-      db.onversionchange = () => {
-        db?.close()
-        db = null
-      }
+    })
+  }
 
-      resolve(db)
-    }
+  async deleteMetadata(metadataId: number) {
+    return this.transaction('rw', this.metadata, this.audio, async () => {
+      const meta = await this.metadata.get(metadataId)
+      if (!meta) return
 
-    request.onerror = () => reject(request.error)
-  })
+      // delete audio records
+      await this.audio.where('metadataId').equals(metadataId).delete()
+      // delete metadata record
+      await this.metadata.delete(metadataId)
+    })
+  }
+
+  async updateAudioTitle(audioId: number, newTitle: string): Promise<boolean> {
+    const r = await this.audio.update(audioId, {
+      title: newTitle,
+      updatedAt: Date.now(),
+    })
+
+    return r !== 0
+  }
 }
 
-async function getStore(mode: IDBTransactionMode): Promise<IDBObjectStore> {
-  const database = await openDb()
-  return database.transaction(STORE_NAME, mode).objectStore(STORE_NAME)
-}
-
-export async function addShadowing(data: AddShadowingData) {
-  const store = await getStore('readwrite')
-  const now = Date.now()
-  return new Promise((resolve, reject) => {
-    const { audio, audioType, ...rest } = data
-    const blob = new Blob([audio], { type: audioType })
-    const req = store.add({ ...rest, audio: blob, createdAt: now, updatedAt: now })
-    req.onsuccess = () => {
-      resolve({ success: true, id: req.result as number })
-    }
-    req.onerror = () =>
-      reject({
-        success: false,
-        error: req.error,
-      })
-  })
-}
-
-export async function deleteShadowing(id: number) {
-  const store = await getStore('readwrite')
-  return new Promise((resolve, reject) => {
-    const req = store.delete(id)
-    req.onsuccess = () => resolve({ success: true })
-    req.onerror = () => reject({ success: false, error: req.error })
-  })
-}
-
-export async function getAllShadowing() {
-  const store = await getStore('readonly')
-  return new Promise((resolve, reject) => {
-    const req = store.getAll()
-    req.onsuccess = () =>
-      resolve({
-        success: true,
-        shadowing: req.result as Shadowing[],
-      })
-    req.onerror = () =>
-      reject({
-        success: true,
-        error: req.error,
-      })
-  })
-}
+export const shadowingDB = new ShadowingDB()

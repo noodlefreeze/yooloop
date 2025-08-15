@@ -30,9 +30,12 @@ export const actionKeys = {
   openIDBSuccess: 'open-idb-success',
   connectIDB: 'connect-idb',
   addShadowing: 'add-shadowing',
+  addShadowingAck: 'add-shadowing-ack',
   getAllShadowing: 'get-all-shadowing',
   injectBridgeFrame: 'inject-bridge-iframe',
 } as const
+
+export const extensionBcName = 'yooloop-bc'
 
 export type SubtitleIdName = (typeof subtitleIdNames)[keyof typeof subtitleIdNames]
 export type MessageKey = (typeof messageKeys)[keyof typeof messageKeys]

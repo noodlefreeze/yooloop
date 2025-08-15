@@ -1,4 +1,4 @@
-// biome-ignore assist/source/organizeImports: jotai bug
+// biome-ignore assist/source/organizeImports: biome bug
 import { atom, type Getter, type Setter } from 'jotai'
 import { withHistory } from 'jotai-history'
 import { loadable } from 'jotai/utils'

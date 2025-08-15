@@ -24,9 +24,8 @@ export function ContentScriptHeader() {
 
 function ShadowingToggler() {
   const [startShadowing, setStartShadowing] = useState(false)
-  const mediaRecorder = useRef<null | MediaRecorder>(null)
   const [bridgeIframeStatus, setBridgeIframeStatus] = useState<'ready' | 'succeed' | 'failed'>('ready')
-  const ipcRef = useRef(null)
+  const mediaRecorder = useRef<null | MediaRecorder>(null)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: fuck effect
   useEffect(() => {
