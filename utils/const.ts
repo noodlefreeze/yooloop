@@ -26,14 +26,15 @@ export const messageKeys = {
 
 export const actionKeys = {
   refreshPot: 'refresh-pot',
-  openIDBFailed: 'open-idb-failed',
-  openIDBSuccess: 'open-idb-success',
-  connectIDB: 'connect-idb',
   addShadowing: 'add-shadowing',
-  addShadowingAck: 'add-shadowing-ack',
-  getAllShadowing: 'get-all-shadowing',
   injectBridgeFrame: 'inject-bridge-iframe',
+  openSidePanel: 'open-side-panel',
+  broadcast: 'broadcast',
 } as const
+
+export const bcTypes = {
+  shadowingAdded: 'shadowing-added',
+}
 
 export const extensionBcName = 'yooloop-bc'
 

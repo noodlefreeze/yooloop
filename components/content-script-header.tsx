@@ -52,6 +52,27 @@ function ShadowingToggler() {
     setupIpc()
   }, [])
 
+  useEffect(() => {
+    window.addEventListener('message', (message) => {
+      // Only handle messages with the 'openSidePanel' action
+      if (message.data.action === actionKeys.openSidePanel) {
+        // Request the background script to open the Side Panel
+        browser.runtime.sendMessage({ action: actionKeys.openSidePanel }).then((opened) => {
+          // If opened successfully and iframe is ready, send the broadcast message
+          if (opened && appMetadata.bridgeIfr?.contentWindow) {
+            appMetadata.bridgeIfr.contentWindow.postMessage(
+              {
+                action: actionKeys.broadcast,
+                payload: bcTypes.shadowingAdded,
+              },
+              new URL(appMetadata.bridgeIfr.src).origin,
+            )
+          }
+        })
+      }
+    })
+  }, [])
+
   async function handleClick() {
     if (bridgeIframeStatus !== 'succeed' || !appMetadata.bridgeIfr) return
 
@@ -80,6 +101,8 @@ function ShadowingToggler() {
       }
     }
     mediaRecorder.current.onstop = () => {
+      mediaRecorder.current = null
+
       const audioType = 'audio/webm'
 
       new Blob(audioChunks, { type: audioType }).arrayBuffer().then((buffer) => {
