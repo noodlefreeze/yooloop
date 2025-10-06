@@ -1,3 +1,6 @@
+import { lightOffElSelector, lightsOffToggleClass, videoHeightCSSVariable } from "./const"
+import { appMetadata } from "./global"
+
 export function waitForElement(selector: string) {
   return new Promise((resolve, reject) => {
     const observer = new MutationObserver(() => {

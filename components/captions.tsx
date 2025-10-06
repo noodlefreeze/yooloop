@@ -1,3 +1,5 @@
+import { storage } from '#imports'
+import { captionIndexAtom, captionsAtom } from '@/utils/captionsAtom'
 import { useAtom } from 'jotai'
 import type { ChangeEvent } from 'react'
 import baseStyle from '~/assets/base.module.scss'

@@ -2,6 +2,7 @@
 import { atom, type Getter, type Setter } from 'jotai'
 import { withHistory } from 'jotai-history'
 import { loadable } from 'jotai/utils'
+import { getDefaultCaptionIndex, getPot, getSearchParam, speedAdShowing } from './common'
 
 // videoId atom
 function createVideoIdAtoms(initialValue: string) {

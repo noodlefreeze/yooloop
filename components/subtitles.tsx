@@ -1,7 +1,12 @@
+import { captionsAtom, loopControllerAtom, setLoopControllerAtom, subtitleEvent, subtitlesAtom } from '@/utils/captionsAtom'
+import { adShowing, bcls, formatMillisecondsToHHMMSS } from '@/utils/common'
+import { subtitleIdNames } from '@/utils/const'
+import { appMetadata } from '@/utils/global'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { type MouseEvent, memo } from 'react'
+import { type MouseEvent, memo, useCallback, useEffect, useRef, useState } from 'react'
 import baseStyle from '~/assets/base.module.scss'
 import style from '~/assets/subtitles.module.scss'
+import { Loading } from './loading'
 
 export function Subtitles() {
   const [currSubtitles, prevSubtitles] = useAtomValue(subtitlesAtom)

@@ -1,5 +1,10 @@
 // biome-ignore assist/source/organizeImports: biome bug
-import type { ContentScriptContext } from '#imports'
+import type { ContentScriptContext, WxtWindowEventMap } from '#imports'
+import { Header } from '@/components/header'
+import { Layout } from '@/components/layout'
+import { Subtitles } from '@/components/subtitles'
+import { setVideoIdAtom } from '@/utils/captionsAtom'
+import { getSearchParam, isValidVideoUrl } from '@/utils/common'
 import { useAtom } from 'jotai'
 import { useEffect } from 'react'
 import baseStyle from '~/assets/base.module.scss'

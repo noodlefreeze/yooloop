@@ -1,4 +1,6 @@
-import type { ContentScriptContext } from '#imports'
+import { createShadowRootUi, defineContentScript, injectScript, type ContentScriptContext } from '#imports'
+import { mountElSelector, videoElSelector, videoWrapperSelector } from '@/utils/const'
+import { createLightsOffEl, syncVideoElHeight, waitForElement } from '@/utils/dom'
 import { appMetadata } from '@/utils/global'
 import '~/assets/main.css'
 import '~/assets/preflight.css'

@@ -19,4 +19,9 @@ export default defineConfig({
     }
   },
   manifestVersion: 3,
+  imports: false,
+  webExt: {
+    // has audio tracks; no audio tracks
+    startUrls: ['https://www.youtube.com/watch?v=mw2z9lV3W1g', 'https://www.youtube.com/watch?v=OPG47_wT3XI'],
+  },
 })

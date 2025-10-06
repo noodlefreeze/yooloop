@@ -1,7 +1,13 @@
+import { loopControllerAtom, setLoopControllerAtom } from '@/utils/captionsAtom'
+import { bcls, formatMillisecondsToHHMMSS } from '@/utils/common'
+import { toggleLights } from '@/utils/dom'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import { useAtomValue, useSetAtom } from 'jotai'
+import { useState } from 'react'
 import baseStyle from '~/assets/base.module.scss'
 import style from '~/assets/header.module.scss'
+import { Captions } from './captions'
+import { Light, Loop } from './icons'
 
 export function Header() {
   return (

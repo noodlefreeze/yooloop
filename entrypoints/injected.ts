@@ -1,3 +1,7 @@
+import { defineUnlistedScript } from "#imports"
+import { Caption } from "@/utils/captionsAtom"
+import { messageKeys, videoWrapperSelector } from "@/utils/const"
+
 interface InjectedCaption extends Caption {
   url: string
 }
